@@ -15,7 +15,6 @@ import pandas as pd
 import os
 import re
 import matplotlib.pyplot as plt
-import
 
 #import seaborn as sns
 
@@ -55,6 +54,7 @@ info = info.to_frame()
 info.columns = ['Year']
 
 
+
 # Outer Join
 #names.Key = names.Key.astype(str)
 #names.Year = names.Key.astype(str)
@@ -64,5 +64,5 @@ info.columns = ['Year']
 # a = names.join(info, on = 'Year', how = 'outer')
 
 
-names.head()
-info.head()
+print(names.head())
+print(info.head())
