@@ -10,25 +10,27 @@ Created on Sat Feb 22 18:45:53 2020
 """
 Importing the data and exploring it
 """
-#import numpy as np
+import numpy as np
 import pandas as pd
-#import matplotlib.pyplot as plt
-#import seaborn as sns
 import os
+import re
+import matplotlib.pyplot as plt
+#import seaborn as sns
+
 #import difflib
-#import re
+
 
 # Set working directory
 path = os.getcwd()
 
 # Import
-train = pd.read_csv("Data/anno_train.csv", header = None)
+train = pd.read_csv("anno_train.csv", header = None)
 print(train.shape)
 
-test = pd.read_csv("Data/anno_test.csv", header = None)
+test = pd.read_csv("anno_test.csv", header = None)
 print(test.shape)
 
-names = pd.read_csv("Data/names.csv", header = None)
+names = pd.read_csv("names.csv", header = None)
 print(names.shape)
 
 ################################# Exploration #################################
