@@ -20,18 +20,26 @@ import matplotlib.pyplot as plt
 
 #import difflib
 
+########################################        Printing Settings           ###########################################
 
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
+pd.set_option('display.max_colwidth', -1)
+
+
+########################################           Import Data              ###########################################
 # Set working directory
 path = os.getcwd()
 
 # Import
-train = pd.read_csv("anno_train.csv", header = None)
+train = pd.read_csv("anno_train.csv", header=None)
 print(train.shape)
 
-test = pd.read_csv("anno_test.csv", header = None)
+test = pd.read_csv("anno_test.csv", header=None)
 print(test.shape)
 
-names = pd.read_csv("names.csv", header = None)
+names = pd.read_csv("names.csv", header=None)
 print(names.shape)
 
 ################################# Exploration #################################
@@ -43,13 +51,18 @@ print(train.head())
 
 # Names - Extract Maker
 names.columns = ['Key']
-names['Maker'] = names['Key'].str.split().str[0]
+names['Maker'] = names['Key'].str.split(';').str[0]
+
+
+names['Model'] = names['Key'].str.split(';').str[1].str.split().str[0:-1]
+
+
 
 # Names - Extract Year
 names['Year'] = names['Key'].str.extract('(\d{4})', expand=True)
 
 # Names - Extract Model
-info = names['Key']
+info=names['Key']
 info = info.to_frame()
 info.columns = ['Year']
 
@@ -64,5 +77,6 @@ info.columns = ['Year']
 # a = names.join(info, on = 'Year', how = 'outer')
 
 
-print(names.head())
-print(info.head())
+
+print(names)
+
