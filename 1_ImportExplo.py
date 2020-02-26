@@ -54,7 +54,16 @@ names.columns = ['Key']
 names['Maker'] = names['Key'].str.split(';').str[0]
 
 
-names['Model'] = names['Key'].str.split(';').str[1].str.split().str[0:-1]
+# names['Model']
+Model = names['Key'].str.split(';').str[1].str.split().str[0:-1]
+
+ModelList = []
+for e in Model:
+    ModelList.append(''.join(str(a)+' ' for a in e))
+
+names['Model'] = ModelList
+
+
 
 
 
