@@ -2,7 +2,7 @@
 """
 Created on Sat Feb 22 18:45:53 2020
 
-@author: Georges
+@author: Georges & Jonathan
 """
 
 
@@ -42,7 +42,8 @@ print(test.shape)
 names = pd.read_csv("names.csv", header=None)
 print(names.shape)
 
-################################# Exploration #################################
+
+########################################             Exploration            ###########################################
 print(train.head())
 
 # Train - set column names
@@ -61,31 +62,31 @@ ModelList = []
 for e in Model:
     ModelList.append(''.join(str(a)+' ' for a in e))
 
+
 names['Model'] = ModelList
 
-
+# print(ModelList)
 
 
 
 # Names - Extract Year
-names['Year'] = names['Key'].str.extract('(\d{4})', expand=True)
-
+names['Year'] = names['Key'].str.split().str[-1]
+print(names['Year'])
 # Names - Extract Model
 info=names['Key']
 info = info.to_frame()
 info.columns = ['Year']
 
+Models = set(ModelList)
+print(Models)
 
+Makers = set(names['Maker'])
 
-# Outer Join
-#names.Key = names.Key.astype(str)
-#names.Year = names.Key.astype(str)
-#names.Maker = names.Key.astype(str)
-#info.Year = info.Year.astype(str)
+MakersDict = {}
+for idx, car in names['Maker'].iteritems():
+    print(idx, car)
+    # if car in MakersDict.keys():
+    # MakersDict[car].add(idx)
 
-# a = names.join(info, on = 'Year', how = 'outer')
-
-
-
-print(names)
+print(MakersDict)
 
