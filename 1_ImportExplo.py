@@ -35,6 +35,15 @@ path = os.getcwd()
 # Import
 train = pd.read_csv("anno_train.csv", header=None)
 print(train.shape)
+# Train - set column names
+train.columns = ['Image', 'Box 1', 'Box 2', 'Box 3', 'Box 4', 'Y']
+# Add Columns for Maker, Model and Year categories
+train['YMak'] = pd.Series(np.zeros(len(train), int))
+
+train['YMod'] = pd.Series(np.zeros(len(train), int))
+
+train['YYear'] = pd.Series(np.zeros(len(train), int))
+
 
 test = pd.read_csv("anno_test.csv", header=None)
 print(test.shape)
@@ -44,18 +53,18 @@ print(names.shape)
 
 
 ########################################             Exploration            ###########################################
-print(train.head())
 
-# Train - set column names
-train.columns = ['Image', 'Box 1', 'Box 2', 'Box 3', 'Box 4', 'Y']
-print(train.head())
+#######    NAMES    ######
 
 # Names - Extract Maker
 names.columns = ['Key']
 names['Maker'] = names['Key'].str.split(';').str[0]
 
 
-# names['Model']
+# Names - Extract Year
+names['Year'] = names['Key'].str.split().str[-1]
+
+# Names - Extract Model
 Model = names['Key'].str.split(';').str[1].str.split().str[0:-1]
 
 ModelList = []
@@ -65,28 +74,42 @@ for e in Model:
 
 names['Model'] = ModelList
 
-# print(ModelList)
 
 
+######      Convert Old Y to new categories      ######
+Makers = sorted(list(set(names['Maker'])))
 
-# Names - Extract Year
-names['Year'] = names['Key'].str.split().str[-1]
-print(names['Year'])
-# Names - Extract Model
-info=names['Key']
-info = info.to_frame()
-info.columns = ['Year']
+MakersID = []
+for i in names['Maker']:
+    MakersID.append(Makers.index(i))
 
-Models = set(ModelList)
-print(Models)
 
-Makers = set(names['Maker'])
+for idx, car in train['Y'].iteritems():
+    train['YMak'][idx] = MakersID[car-1]
 
-MakersDict = {}
-for idx, car in names['Maker'].iteritems():
-    print(idx, car)
+print(train)
+
+np.savetxt(r'trainMaker.txt', train['YMak'].values, fmt='%d')
+
+# MakersList=[]
+# MakersDict = {}
+# for idx, car in names['Maker'].iteritems():
+#     if car not in MakersDict.keys():
+#         MakersDict[car] = []
+#     MakersDict[car].append(idx)
+
     # if car in MakersDict.keys():
     # MakersDict[car].add(idx)
 
-print(MakersDict)
 
+
+
+
+# print(train)
+
+# for idx, row in train.iterrows():
+#     for maker in MakersDict:
+#         if row[5] in MakersDict[maker]:
+#             train['YMak',idx] = maker
+#
+# print(train)
