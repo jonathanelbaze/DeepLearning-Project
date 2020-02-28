@@ -77,20 +77,43 @@ names['Model'] = ModelList
 
 
 ######      Convert Old Y to new categories      ######
-Makers = sorted(list(set(names['Maker'])))
-
-MakersID = []
-for i in names['Maker']:
-    MakersID.append(Makers.index(i))
 
 
-for idx, car in train['Y'].iteritems():
-    train['YMak'][idx] = MakersID[car-1]
+def create_list(df):
+    #Create a list from a column dataframe
+    l = []
+    for i in df:
+        if not i in l:
+            l.append(i)
+    return l
 
+print(create_list(names['Maker']))
+
+print(len(create_list(names['Maker'])))
+
+print(create_list(names['Model']))
+
+print(len(create_list(names['Model'])))
+
+def add_values_Y(datalist, nameslist, dataframe, column):
+# Add new Y values to Train or Test Dataframe (YMak or YMod or YYear)
+    IDlist = []
+    for i in nameslist:
+        IDlist.append(datalist.index(i))
+
+    for idx, car in dataframe['Y'].iteritems():
+        dataframe[column][idx] = IDlist[car-1]
+
+
+add_values_Y(create_list(names['Maker']), names['Maker'], train, 'YMak')
+add_values_Y(create_list(names['Model']), names['Model'], train, 'YMod')
+add_values_Y(create_list(names['Year']), names['Year'], train, 'YYear')
 print(train)
 
+# print(train)
+
 train_maker_labels = train['YMak'].to_numpy
-print(train_maker_labels)
+# print(train_maker_labels)
 # MakersList=[]
 # MakersDict = {}
 # for idx, car in names['Maker'].iteritems():
