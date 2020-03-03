@@ -113,6 +113,8 @@ print(train)
 # print(train)
 
 train_maker_labels = train['YMak'].to_numpy
+train_model_labels = train['YMod'].to_numpy
+train_year_labels = train['YYear'].to_numpy
 # print(train_maker_labels)
 # MakersList=[]
 # MakersDict = {}
