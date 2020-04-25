@@ -16,9 +16,7 @@ import os
 import re
 import matplotlib.pyplot as plt
 
-#import seaborn as sns
 
-#import difflib
 
 ########################################        Printing Settings           ###########################################
 
