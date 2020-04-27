@@ -50,7 +50,7 @@ names = pd.read_csv("names.csv", header=None)
 print(names.shape)
 
 
-########################################             Exploration            ###########################################
+########################################           Exploration            ###########################################
 
 #######    NAMES    ######
 
@@ -85,13 +85,13 @@ def create_list(df):
             l.append(i)
     return l
 
-print(create_list(names['Maker']))
-
-print(len(create_list(names['Maker'])))
-
-print(create_list(names['Model']))
-
-print(len(create_list(names['Model'])))
+# print(create_list(names['Maker']))
+#
+# print(len(create_list(names['Maker'])))
+#
+# print(create_list(names['Model']))
+#
+# print(len(create_list(names['Model'])))
 
 def add_values_Y(datalist, nameslist, dataframe, column):
 # Add new Y values to Train or Test Dataframe (YMak or YMod or YYear)
@@ -136,3 +136,25 @@ train_year_labels = train['YYear'].to_numpy
 #             train['YMak',idx] = maker
 #
 # print(train)
+
+
+
+
+########################################        Creating Folders         ###########################################
+
+DIR = '/Users/jonathanelbaze/Desktop/HEC/Session 4/DeepLearning-Project/cars_train/'
+
+
+def create_dir(listnames):
+    for name in listnames:
+        os.mkdir(DIR + name)
+
+
+def organize(carlist):
+    for _, item in carlist.iterrows():
+        dir1 = DIR + 'input/' + item['Image']
+        dir2 = DIR + create_list(names['Maker'])[item['YMak']] + '/' + item['Image']
+        os.rename(dir1, dir2)
+
+
+organize(train)
