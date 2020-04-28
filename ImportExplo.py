@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 
 ########################################        Printing Settings           ###########################################
 
-pd.set_option('display.max_rows', None)
+pd.set_option('display.max_rows', 100)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
 pd.set_option('display.max_colwidth', -1)
@@ -32,7 +32,7 @@ path = os.getcwd()
 
 # Import
 train = pd.read_csv("anno_train.csv", header=None)
-print(train.shape)
+
 # Train - set column names
 train.columns = ['Image', 'Box 1', 'Box 2', 'Box 3', 'Box 4', 'Y']
 # Add Columns for Maker, Model and Year categories
@@ -44,11 +44,18 @@ train['YYear'] = pd.Series(np.zeros(len(train), int))
 
 
 test = pd.read_csv("anno_test.csv", header=None)
-print(test.shape)
+
+
+test.columns = ['Image', 'Box 1', 'Box 2', 'Box 3', 'Box 4', 'Y']
+# Add Columns for Maker, Model and Year categories
+test['YMak'] = pd.Series(np.zeros(len(test), int))
+
+test['YMod'] = pd.Series(np.zeros(len(test), int))
+
+test['YYear'] = pd.Series(np.zeros(len(test), int))
+
 
 names = pd.read_csv("names.csv", header=None)
-print(names.shape)
-
 
 ########################################           Exploration            ###########################################
 
@@ -106,14 +113,15 @@ def add_values_Y(datalist, nameslist, dataframe, column):
 add_values_Y(create_list(names['Maker']), names['Maker'], train, 'YMak')
 add_values_Y(create_list(names['Model']), names['Model'], train, 'YMod')
 add_values_Y(create_list(names['Year']), names['Year'], train, 'YYear')
-print(train)
 
-# print(train)
+add_values_Y(create_list(names['Maker']), names['Maker'], test, 'YMak')
+add_values_Y(create_list(names['Model']), names['Model'], test, 'YMod')
+add_values_Y(create_list(names['Year']), names['Year'], test, 'YYear')
 
 train_maker_labels = train['YMak'].to_numpy
 train_model_labels = train['YMod'].to_numpy
 train_year_labels = train['YYear'].to_numpy
-# print(train_maker_labels)
+
 # MakersList=[]
 # MakersDict = {}
 # for idx, car in names['Maker'].iteritems():
@@ -142,19 +150,20 @@ train_year_labels = train['YYear'].to_numpy
 
 ########################################        Creating Folders         ###########################################
 
-DIR = '/Users/jonathanelbaze/Desktop/HEC/Session 4/DeepLearning-Project/cars_train/'
-
+#DIR = 'C:/Users/Georges/PycharmProjects/DeepLearning-Project/cars_train/'
+# DIR = 'C:/Users/Georges/PycharmProjects/DeepLearning-Project/cars_test/'
 
 def create_dir(listnames):
     for name in listnames:
         os.mkdir(DIR + name)
 
+#create_dir(names['Maker'].unique())
 
 def organize(carlist):
     for _, item in carlist.iterrows():
         dir1 = DIR + 'input/' + item['Image']
         dir2 = DIR + create_list(names['Maker'])[item['YMak']] + '/' + item['Image']
         os.rename(dir1, dir2)
+#organize(train)
 
-
-organize(train)
+# organize(test)
