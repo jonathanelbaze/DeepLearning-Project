@@ -5,7 +5,7 @@ import torchvision
 import torch.nn.functional as F
 from torchvision import datasets, transforms, models
 import time
-
+import pickle
 import skorch
 import sklearn
 import numpy as np
@@ -26,13 +26,13 @@ train_dir = "cars_train/"
 test_dir = "cars_test/"
 print(train_dir)
 
-train_tranform = transforms.Compose([transforms.Resize((400, 400)),
+train_tranform = transforms.Compose([transforms.Resize((200, 200)),
                                  transforms.RandomHorizontalFlip(),
                                  transforms.RandomRotation(15),
                                  transforms.ToTensor(),
                                  transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-test_tranform = transforms.Compose([transforms.Resize((400, 400)),
+test_tranform = transforms.Compose([transforms.Resize((200, 200)),
                                  transforms.ToTensor(),
                                  transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
@@ -51,41 +51,6 @@ test_loader = torch.utils.data.DataLoader(dataset=test_data,
                                           batch_size=32,
                                           shuffle=True,
                                           )
-
-
-
-# model.fit(train.data.scaled, np.array(train.targets))
-
-# # Gridsearch for hyperparameters (Keep all cell outputs for grading)
-# gridsearch = [
-#     [128, optim.SGD, 0.001],
-#     [256, optim.SGD, 0.001],
-#     [512, optim.SGD, 0.001],
-#     [128, optim.Adam, 0.0001],
-#     [256, optim.Adam, 0.0001],
-#     [512, optim.Adam, 0.0001]]
-#
-# for i in range(len(gridsearch)):
-#     conv_out = gridsearch[i][0]
-#     optimizer_method = gridsearch[i][1]
-#     learning_rate = gridsearch[i][2]
-#
-#     print(f'out channels = {conv_out}, optimizer = {optimizer_method}, learning rate = {learning_rate}')
-#
-#     model = skorch.NeuralNetClassifier(CNN
-#                                        , module__in_dim=3
-#                                        , module__conv_out=conv_out
-#                                        , criterion=torch.nn.CrossEntropyLoss
-#                                        , optimizer=optimizer_method
-#                                        , max_epochs=45
-#                                        , lr=learning_rate
-#                                        , device="cuda")
-#
-#     model.fit(train.data.scaled, np.array(train.targets))
-
-
-
-
 
 
 device = "cpu"
@@ -131,7 +96,7 @@ def train_model(model, criterion, optimizer, scheduler, n_epochs=5):
 
         # switch the model to eval mode to evaluate on test data
         model.eval()
-        test_acc = eval_model(model)
+        test_acc, = eval_model(model)
         test_accuracies.append(test_acc)
 
         # re-set the model to train mode after validating
@@ -145,6 +110,7 @@ def train_model(model, criterion, optimizer, scheduler, n_epochs=5):
 def eval_model(model):
     correct = 0.0
     total = 0.0
+    #pred = []
     with torch.no_grad():
         for i, data in enumerate(test_loader, 0):
             images, labels = data
@@ -154,6 +120,7 @@ def eval_model(model):
 
             outputs = model_ft(images)
             _, predicted = torch.max(outputs.data, 1)
+            #pred.append(predicted)
 
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
@@ -161,10 +128,13 @@ def eval_model(model):
     test_acc = 100.0 * correct / total
     print('Accuracy of the network on the test images: %d %%' % (
         test_acc))
-    return test_acc
+    return test_acc #, pred
 
-model_ft = models.resnet34(pretrained=True)
+model_ft = models.resnet18(pretrained=True)
 num_ftrs = model_ft.fc.in_features
+
+#model_ft = models.resnet34(pretrained=True)
+#num_ftrs = model_ft.fc.in_features
 
 # replace the last fc layer with an untrained one (requires grad by default)
 model_ft.fc = nn.Linear(num_ftrs, 49)
@@ -189,4 +159,71 @@ However in this model it did not benefit me.
 """
 lrscheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', patience=3, threshold = 0.9)
 
-model_ft, training_losses, training_accs, test_accs = train_model(model_ft, criterion, optimizer, lrscheduler, n_epochs=2)
+model_ft, training_losses, training_accs, test_accs = train_model(model_ft, criterion, optimizer, lrscheduler, n_epochs=20)
+
+with open('classifier.pickle','wb') as f:
+    pickle.dump(model_ft, f)
+
+
+
+# plot the stats
+
+f, axarr = plt.subplots(2,2, figsize = (12, 8))
+axarr[0, 0].plot(training_losses)
+axarr[0, 0].set_title("Training loss")
+axarr[0, 1].plot(training_accs)
+axarr[0, 1].set_title("Training acc")
+axarr[1, 0].plot(test_accs)
+
+axarr[1, 0].set_title("Test acc")
+
+
+
+
+# class CNN_MaxPool(nn.Module):
+#     def __init__(self, in_dim, out_dim1, out_dim2, out_dim3):
+#         super(CNN_MaxPool, self).__init__()
+#         self.in_dim = in_dim
+#         self.out_dim1 = out_dim1
+#         self.out_dim2 = out_dim2
+#         self.out_dim3 = out_dim3
+#         # implement parameter definitions here
+#         self.layer1_conv = nn.Sequential(
+#             nn.Conv2d(in_channels=in_dim, out_channels=out_dim1, kernel_size=3, padding=1),
+#             nn.ReLU(),
+#             nn.MaxPool2d(kernel_size=2, stride=2)
+#         )
+#         self.layer2_conv = nn.Sequential(
+#             nn.Conv2d(in_channels=out_dim1, out_channels=out_dim2, kernel_size=3, padding=1),
+#             nn.ReLU(),
+#             nn.MaxPool2d(kernel_size=2, stride=2)
+#         )
+#         self.layer3_conv = nn.Sequential(
+#             nn.Conv2d(in_channels=out_dim2, out_channels=out_dim3, kernel_size=3, padding=1),
+#             nn.ReLU(),
+#             nn.MaxPool2d(kernel_size=2, stride=2)
+#         )
+#         self.fc1 = nn.Linear(in_features=out_dim3 * 4 * 4, out_features=10)
+#
+#     def forward(self, images):
+#         # implement the forward function here
+#         out = self.layer1_conv(images)
+#         out = self.layer2_conv(out)
+#         out = self.layer3_conv(out)
+#
+#         out = out.view(out.size(0), -1)
+#
+#         out = self.fc1(out)
+#         return out
+#
+#
+# model = skorch.NeuralNetClassifier(CNN_MaxPool
+#                                     module__in_dim = 3
+#                                     module__out_dim1 = grid[i][0]
+#                                     module__out_dim2 = grid[i][1]
+#                                     module__out_dim3 = grid[i][2]
+#                                     criterion = torch.nn.CrossEntropyLoss
+#                                     optimizer = optimizer_method
+#                                     max_epochs = 30
+#                                     lr = learning_rate
+#                                     device="cuda")
