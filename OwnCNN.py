@@ -14,10 +14,6 @@ import matplotlib.pyplot as plt
 
 from ImportExplo import *
 
-
-
-
-
 # Load and Transform
 path = os.getcwd()
 print(path)

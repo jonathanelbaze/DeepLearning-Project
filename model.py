@@ -27,6 +27,7 @@ def eval_model(model):
     correct = 0.0
     total = 0.0
     pred = []
+    label = []
     with torch.no_grad():
         for i, data in enumerate(test_loader, 0):
             images, labels = data
@@ -39,18 +40,22 @@ def eval_model(model):
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
             pred.append(predicted)
+            label.append(labels)
 
     test_acc = 100.0 * correct / total
     print('Accuracy of the network on the test images: %d %%' % (test_acc))
-    return test_acc, pred
+    return test_acc, pred, label
 
-accuracy, preds = eval_model(a)
+accuracy, preds, label = eval_model(a)
 
 with open('acc_test.pkl', 'wb') as f:
     pickle.dump(accuracy, f)
 
 with open('preds.pkl', 'wb') as f:
     pickle.dump(preds, f)
+
+with open('label.pkl', 'wb') as f:
+    pickle.dump(label, f)
 
 # plot the stats
 with open('preds.pkl', 'rb') as f:
