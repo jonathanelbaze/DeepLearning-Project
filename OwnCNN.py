@@ -160,14 +160,22 @@ model_ft, training_losses, training_accs, test_accs = train_model(model_ft, crit
 torch.save(model_ft.state_dict(), "C:/Users/Georges/PycharmProjects/DeepLearning-Project/bestmodel_dic.pth")
 torch.save(model_ft, "C:/Users/Georges/PycharmProjects/DeepLearning-Project/bestmodel.pth")
 
+with open('training_acc.pkl', 'wb') as f:
+    pickle.dump(training_accs, f)
 
+with open('test_acc.pkl', 'wb') as f:
+    pickle.dump(test_accs, f)
 
 # plot the stats
+with open('training_acc.pkl', 'rb') as f:
+    training_acc = pickle.load(f)
+
+with open('test_acc.pkl', 'rb') as f:
+    test_acc = pickle.load(f)
+
 f, axarr = plt.subplots(2,2, figsize = (12, 8))
-axarr[0, 0].plot(training_losses)
-axarr[0, 0].set_title("Training loss")
-axarr[0, 1].plot(training_accs)
+axarr[0, 1].plot(training_acc)
 axarr[0, 1].set_title("Training acc")
-axarr[1, 0].plot(test_accs)
+axarr[1, 0].plot(test_acc)
 
 axarr[1, 0].set_title("Test acc")
