@@ -124,7 +124,7 @@ def eval_model(model):
 
 model_ft = models.resnet18(pretrained=True)
 num_ftrs = model_ft.fc.in_features
-
+models.
 #model_ft = models.resnet34(pretrained=True)
 #num_ftrs = model_ft.fc.in_features
 
@@ -151,7 +151,7 @@ However in this model it did not benefit me.
 """
 lrscheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', patience=3, threshold = 0.9)
 
-model_ft, training_losses, training_accs, test_accs = train_model(model_ft, criterion, optimizer, lrscheduler, n_epochs=15)
+model_ft, training_losses, training_accs, test_accs = train_model(model_ft, criterion, optimizer, lrscheduler, n_epochs=10)
 
 torch.save(model_ft.state_dict(), "C:/Users/Georges/PycharmProjects/DeepLearning-Project/bestmodel_dic.pth")
 torch.save(model_ft, "C:/Users/Georges/PycharmProjects/DeepLearning-Project/bestmodel.pth")
