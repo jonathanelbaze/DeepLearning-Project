@@ -160,7 +160,6 @@ model_ft, training_losses, training_accs, test_accs = train_model(model_ft, crit
 torch.save(model_ft.state_dict(), "C:/Users/Georges/PycharmProjects/DeepLearning-Project/bestmodel_dic.pth")
 torch.save(model_ft, "C:/Users/Georges/PycharmProjects/DeepLearning-Project/bestmodel.pth")
 
-model_ft.save_state_dict("C:/Users/Georges/PycharmProjects/DeepLearning-Project/testtest.pth")
 
 
 # plot the stats
