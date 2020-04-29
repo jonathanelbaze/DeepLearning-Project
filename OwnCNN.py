@@ -26,13 +26,13 @@ train_dir = "cars_train/"
 test_dir = "cars_test/"
 print(train_dir)
 
-train_tranform = transforms.Compose([transforms.Resize((200, 200)),
+train_tranform = transforms.Compose([transforms.Resize((250, 250)),
                                  transforms.RandomHorizontalFlip(),
                                  transforms.RandomRotation(15),
                                  transforms.ToTensor(),
                                  transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-test_tranform = transforms.Compose([transforms.Resize((200, 200)),
+test_tranform = transforms.Compose([transforms.Resize((250, 250)),
                                  transforms.ToTensor(),
                                  transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
@@ -96,7 +96,7 @@ def train_model(model, criterion, optimizer, scheduler, n_epochs=5):
 
         # switch the model to eval mode to evaluate on test data
         model.eval()
-        test_acc, = eval_model(model)
+        test_acc = eval_model(model)
         test_accuracies.append(test_acc)
 
         # re-set the model to train mode after validating
@@ -110,25 +110,21 @@ def train_model(model, criterion, optimizer, scheduler, n_epochs=5):
 def eval_model(model):
     correct = 0.0
     total = 0.0
-    #pred = []
     with torch.no_grad():
         for i, data in enumerate(test_loader, 0):
             images, labels = data
-            # images = images.to(device).half() # uncomment for half precision model
             images = images.to(device)
             labels = labels.to(device)
 
             outputs = model_ft(images)
             _, predicted = torch.max(outputs.data, 1)
-            #pred.append(predicted)
 
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
 
     test_acc = 100.0 * correct / total
-    print('Accuracy of the network on the test images: %d %%' % (
-        test_acc))
-    return test_acc #, pred
+    print('Accuracy of the network on the test images: %d %%' % (test_acc))
+    return test_acc
 
 model_ft = models.resnet18(pretrained=True)
 num_ftrs = model_ft.fc.in_features
@@ -159,15 +155,15 @@ However in this model it did not benefit me.
 """
 lrscheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', patience=3, threshold = 0.9)
 
-model_ft, training_losses, training_accs, test_accs = train_model(model_ft, criterion, optimizer, lrscheduler, n_epochs=20)
+model_ft, training_losses, training_accs, test_accs = train_model(model_ft, criterion, optimizer, lrscheduler, n_epochs=15)
 
-with open('classifier.pickle','wb') as f:
-    pickle.dump(model_ft, f)
+torch.save(model_ft.state_dict(), "C:/Users/Georges/PycharmProjects/DeepLearning-Project/bestmodel_dic.pth")
+torch.save(model_ft, "C:/Users/Georges/PycharmProjects/DeepLearning-Project/bestmodel.pth")
 
+model_ft.save_state_dict("C:/Users/Georges/PycharmProjects/DeepLearning-Project/testtest.pth")
 
 
 # plot the stats
-
 f, axarr = plt.subplots(2,2, figsize = (12, 8))
 axarr[0, 0].plot(training_losses)
 axarr[0, 0].set_title("Training loss")
@@ -176,54 +172,3 @@ axarr[0, 1].set_title("Training acc")
 axarr[1, 0].plot(test_accs)
 
 axarr[1, 0].set_title("Test acc")
-
-
-
-
-# class CNN_MaxPool(nn.Module):
-#     def __init__(self, in_dim, out_dim1, out_dim2, out_dim3):
-#         super(CNN_MaxPool, self).__init__()
-#         self.in_dim = in_dim
-#         self.out_dim1 = out_dim1
-#         self.out_dim2 = out_dim2
-#         self.out_dim3 = out_dim3
-#         # implement parameter definitions here
-#         self.layer1_conv = nn.Sequential(
-#             nn.Conv2d(in_channels=in_dim, out_channels=out_dim1, kernel_size=3, padding=1),
-#             nn.ReLU(),
-#             nn.MaxPool2d(kernel_size=2, stride=2)
-#         )
-#         self.layer2_conv = nn.Sequential(
-#             nn.Conv2d(in_channels=out_dim1, out_channels=out_dim2, kernel_size=3, padding=1),
-#             nn.ReLU(),
-#             nn.MaxPool2d(kernel_size=2, stride=2)
-#         )
-#         self.layer3_conv = nn.Sequential(
-#             nn.Conv2d(in_channels=out_dim2, out_channels=out_dim3, kernel_size=3, padding=1),
-#             nn.ReLU(),
-#             nn.MaxPool2d(kernel_size=2, stride=2)
-#         )
-#         self.fc1 = nn.Linear(in_features=out_dim3 * 4 * 4, out_features=10)
-#
-#     def forward(self, images):
-#         # implement the forward function here
-#         out = self.layer1_conv(images)
-#         out = self.layer2_conv(out)
-#         out = self.layer3_conv(out)
-#
-#         out = out.view(out.size(0), -1)
-#
-#         out = self.fc1(out)
-#         return out
-#
-#
-# model = skorch.NeuralNetClassifier(CNN_MaxPool
-#                                     module__in_dim = 3
-#                                     module__out_dim1 = grid[i][0]
-#                                     module__out_dim2 = grid[i][1]
-#                                     module__out_dim3 = grid[i][2]
-#                                     criterion = torch.nn.CrossEntropyLoss
-#                                     optimizer = optimizer_method
-#                                     max_epochs = 30
-#                                     lr = learning_rate
-#                                     device="cuda")
